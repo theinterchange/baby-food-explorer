@@ -133,7 +133,11 @@ interface Food {
   icon: string;
 }
 
-export function FoodLibrary() {
+interface FoodLibraryProps {
+  onFoodLogged?: (entry: any) => void;
+}
+
+export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [showAllergensOnly, setShowAllergensOnly] = useState(false);
@@ -163,8 +167,9 @@ export function FoodLibrary() {
   };
 
   const handleFoodLogged = (entry: any) => {
-    // Here you would typically update your food diary state/database
-    console.log("Food logged:", entry);
+    if (onFoodLogged) {
+      onFoodLogged(entry);
+    }
   };
 
   return (
@@ -258,7 +263,7 @@ export function FoodLibrary() {
                           className="bg-allergen-high text-allergen-high-foreground text-xs"
                         >
                           <Shield className="h-3 w-3 mr-1" />
-                          Allergen
+                          Allergen: {food.allergens.join(", ")}
                         </Badge>
                       )}
                       
@@ -287,23 +292,6 @@ export function FoodLibrary() {
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
-
-                {/* Allergen Details - Only show if present */}
-                {food.allergens.length > 0 && (
-                  <div className="mt-3 pt-2 border-t border-border/50">
-                    <div className="flex flex-wrap gap-1">
-                      {food.allergens.map(allergen => (
-                        <Badge
-                          key={allergen}
-                          variant="outline"
-                          className="text-xs bg-allergen-medium text-allergen-medium-foreground"
-                        >
-                          {allergen}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
           ))}

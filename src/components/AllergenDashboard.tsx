@@ -5,58 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-// Major allergens as defined by FDA
-const MAJOR_ALLERGENS = [
-  { 
-    name: "Eggs", 
-    tried: true, 
-    reactions: "None - enjoyed scrambled eggs",
-    lastTried: "2024-01-19"
-  },
-  { 
-    name: "Milk/Dairy", 
-    tried: false, 
-    reactions: "",
-    lastTried: null
-  },
-  { 
-    name: "Peanuts", 
-    tried: false, 
-    reactions: "",
-    lastTried: null
-  },
-  { 
-    name: "Tree Nuts", 
-    tried: false, 
-    reactions: "",
-    lastTried: null
-  },
-  { 
-    name: "Fish", 
-    tried: false, 
-    reactions: "",
-    lastTried: null
-  },
-  { 
-    name: "Shellfish", 
-    tried: false, 
-    reactions: "",
-    lastTried: null
-  },
-  { 
-    name: "Soy", 
-    tried: false, 
-    reactions: "",
-    lastTried: null
-  },
-  { 
-    name: "Wheat", 
-    tried: false, 
-    reactions: "",
-    lastTried: null
-  }
-];
-
 interface Allergen {
   name: string;
   tried: boolean;
@@ -64,16 +12,20 @@ interface Allergen {
   lastTried: string | null;
 }
 
-export function AllergenDashboard() {
-  const [allergens, setAllergens] = useState<Allergen[]>(MAJOR_ALLERGENS);
+interface AllergenDashboardProps {
+  allergenData: Allergen[];
+  setAllergenData: React.Dispatch<React.SetStateAction<Allergen[]>>;
+}
+
+export function AllergenDashboard({ allergenData, setAllergenData }: AllergenDashboardProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [noteText, setNoteText] = useState("");
 
-  const triedCount = allergens.filter(a => a.tried).length;
-  const remainingCount = allergens.length - triedCount;
+  const triedCount = allergenData.filter(a => a.tried).length;
+  const remainingCount = allergenData.length - triedCount;
 
   const toggleTried = (allergenName: string) => {
-    setAllergens(prev => 
+    setAllergenData(prev => 
       prev.map(allergen => 
         allergen.name === allergenName 
           ? { 
@@ -87,7 +39,7 @@ export function AllergenDashboard() {
   };
 
   const saveNote = (allergenName: string) => {
-    setAllergens(prev => 
+    setAllergenData(prev => 
       prev.map(allergen => 
         allergen.name === allergenName 
           ? { ...allergen, reactions: noteText }
@@ -116,7 +68,7 @@ export function AllergenDashboard() {
         <CardContent className="p-6">
           <div className="grid grid-cols-2 gap-6 text-center">
             <div>
-              <p className="text-3xl font-bold text-success">{triedCount}/8</p>
+              <p className="text-3xl font-bold text-success">{triedCount}/{allergenData.length}</p>
               <p className="text-sm text-muted-foreground">Allergens Introduced</p>
             </div>
             <div>
@@ -127,12 +79,12 @@ export function AllergenDashboard() {
           
           {/* Progress Bar */}
           <div className="mt-4">
-            <div className="w-full bg-muted rounded-full h-2">
-              <div 
-                className="bg-gradient-primary h-2 rounded-full transition-all duration-300"
-                style={{ width: `${(triedCount / allergens.length) * 100}%` }}
-              />
-            </div>
+              <div className="w-full bg-muted rounded-full h-2">
+                <div 
+                  className="bg-gradient-primary h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${(triedCount / allergenData.length) * 100}%` }}
+                />
+              </div>
           </div>
         </CardContent>
       </Card>
@@ -157,7 +109,7 @@ export function AllergenDashboard() {
 
       {/* Allergen List */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {allergens.map(allergen => (
+        {allergenData.map(allergen => (
           <Card 
             key={allergen.name} 
             className={`hover:shadow-medium transition-all duration-200 ${

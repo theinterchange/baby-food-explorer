@@ -4,53 +4,30 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-// Sample diary data - would come from a database in production
-const DIARY_ENTRIES = [
-  {
-    id: 1,
-    date: "2024-01-20",
-    foodName: "Avocado",
-    isNewFood: true,
-    liked: true,
-    preparation: "Mashed",
-    notes: "First time trying! Loved it and asked for more."
-  },
-  {
-    id: 2,
-    date: "2024-01-20",
-    foodName: "Sweet Potato",
-    isNewFood: false,
-    liked: true,
-    preparation: "Steamed",
-    notes: "Third time having this. Still enjoys it."
-  },
-  {
-    id: 3,
-    date: "2024-01-19",
-    foodName: "Eggs",
-    isNewFood: true,
-    liked: false,
-    preparation: "Scrambled",
-    notes: "Made a face but ate a few bites. Will try again."
-  }
-];
-
 interface DiaryEntry {
   id: number;
   date: string;
+  time: string;
   foodName: string;
-  isNewFood: boolean;
-  liked: boolean;
   preparation: string;
+  babyReaction: string;
+  hadReaction: boolean;
   notes: string;
+  timestamp: string;
+  isAllergen: boolean;
+  allergens: string[];
 }
 
-export function FoodDiary() {
+interface FoodDiaryProps {
+  entries: DiaryEntry[];
+}
+
+export function FoodDiary({ entries }: FoodDiaryProps) {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Get diary entries for selected date
   const selectedDateStr = selectedDate.toISOString().split('T')[0];
-  const dayEntries = DIARY_ENTRIES.filter(entry => entry.date === selectedDateStr);
+  const dayEntries = entries.filter(entry => entry.date === selectedDateStr);
 
   // Calendar navigation
   const previousDay = () => {
@@ -116,26 +93,43 @@ export function FoodDiary() {
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-lg">{entry.foodName}</CardTitle>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      {entry.foodName}
+                      <span className="text-sm font-normal text-muted-foreground">
+                        {entry.time}
+                      </span>
+                    </CardTitle>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Preparation: {entry.preparation}
+                      Preparation: {entry.preparation || "Not specified"}
                     </p>
                   </div>
-                  <div className="flex gap-2">
-                    {entry.isNewFood && (
-                      <Badge className="bg-primary-soft text-primary-foreground">
-                        New Food!
+                  <div className="flex flex-col gap-2">
+                    <div className="flex gap-2 flex-wrap">
+                      {entry.isAllergen && (
+                        <Badge className="bg-allergen-high text-allergen-high-foreground">
+                          Allergen
+                        </Badge>
+                      )}
+                      <Badge 
+                        variant="outline"
+                        className={
+                          entry.babyReaction === "loved" ? "bg-success/20 text-success border-success/40" :
+                          entry.babyReaction === "liked" ? "bg-success/10 text-success border-success/20" :
+                          entry.babyReaction === "mixed" ? "bg-warning/10 text-warning border-warning/20" :
+                          "bg-destructive/10 text-destructive border-destructive/20"
+                        }
+                      >
+                        {entry.babyReaction === "loved" ? "🤤 Loved" :
+                         entry.babyReaction === "liked" ? "😋 Liked" :
+                         entry.babyReaction === "mixed" ? "😐 Mixed" :
+                         "😤 Disliked"}
                       </Badge>
-                    )}
-                    <Badge 
-                      variant="outline"
-                      className={entry.liked 
-                        ? "bg-success/10 text-success border-success/20" 
-                        : "bg-warning/10 text-warning border-warning/20"
-                      }
-                    >
-                      {entry.liked ? "😋 Liked" : "😐 Mixed"}
-                    </Badge>
+                      {entry.hadReaction && (
+                        <Badge className="bg-destructive text-destructive-foreground">
+                          ⚠️ Reaction
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
               </CardHeader>
