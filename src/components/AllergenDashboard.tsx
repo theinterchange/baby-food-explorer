@@ -1,0 +1,275 @@
+import { useState } from "react";
+import { CheckCircle2, Circle, AlertTriangle, FileText } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+
+// Major allergens as defined by FDA
+const MAJOR_ALLERGENS = [
+  { 
+    name: "Eggs", 
+    tried: true, 
+    reactions: "None - enjoyed scrambled eggs",
+    lastTried: "2024-01-19"
+  },
+  { 
+    name: "Milk/Dairy", 
+    tried: false, 
+    reactions: "",
+    lastTried: null
+  },
+  { 
+    name: "Peanuts", 
+    tried: false, 
+    reactions: "",
+    lastTried: null
+  },
+  { 
+    name: "Tree Nuts", 
+    tried: false, 
+    reactions: "",
+    lastTried: null
+  },
+  { 
+    name: "Fish", 
+    tried: false, 
+    reactions: "",
+    lastTried: null
+  },
+  { 
+    name: "Shellfish", 
+    tried: false, 
+    reactions: "",
+    lastTried: null
+  },
+  { 
+    name: "Soy", 
+    tried: false, 
+    reactions: "",
+    lastTried: null
+  },
+  { 
+    name: "Wheat", 
+    tried: false, 
+    reactions: "",
+    lastTried: null
+  }
+];
+
+interface Allergen {
+  name: string;
+  tried: boolean;
+  reactions: string;
+  lastTried: string | null;
+}
+
+export function AllergenDashboard() {
+  const [allergens, setAllergens] = useState<Allergen[]>(MAJOR_ALLERGENS);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [noteText, setNoteText] = useState("");
+
+  const triedCount = allergens.filter(a => a.tried).length;
+  const remainingCount = allergens.length - triedCount;
+
+  const toggleTried = (allergenName: string) => {
+    setAllergens(prev => 
+      prev.map(allergen => 
+        allergen.name === allergenName 
+          ? { 
+              ...allergen, 
+              tried: !allergen.tried,
+              lastTried: !allergen.tried ? new Date().toISOString().split('T')[0] : null
+            }
+          : allergen
+      )
+    );
+  };
+
+  const saveNote = (allergenName: string) => {
+    setAllergens(prev => 
+      prev.map(allergen => 
+        allergen.name === allergenName 
+          ? { ...allergen, reactions: noteText }
+          : allergen
+      )
+    );
+    setEditingId(null);
+    setNoteText("");
+  };
+
+  const startEditing = (allergenName: string, currentNote: string) => {
+    setEditingId(allergenName);
+    setNoteText(currentNote);
+  };
+
+  return (
+    <div className="space-y-6 p-6">
+      {/* Header */}
+      <div className="text-center space-y-2">
+        <h1 className="text-2xl font-bold">Allergen Dashboard</h1>
+        <p className="text-muted-foreground">Track major allergen introductions and reactions</p>
+      </div>
+
+      {/* Progress Overview */}
+      <Card className="bg-gradient-card">
+        <CardContent className="p-6">
+          <div className="grid grid-cols-2 gap-6 text-center">
+            <div>
+              <p className="text-3xl font-bold text-success">{triedCount}/8</p>
+              <p className="text-sm text-muted-foreground">Allergens Introduced</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-primary">{remainingCount}</p>
+              <p className="text-sm text-muted-foreground">Still to Try</p>
+            </div>
+          </div>
+          
+          {/* Progress Bar */}
+          <div className="mt-4">
+            <div className="w-full bg-muted rounded-full h-2">
+              <div 
+                className="bg-gradient-primary h-2 rounded-full transition-all duration-300"
+                style={{ width: `${(triedCount / allergens.length) * 100}%` }}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Important Note */}
+      <Card className="bg-allergen-medium border-allergen-medium-foreground/20">
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-allergen-medium-foreground mt-0.5 flex-shrink-0" />
+            <div className="text-sm">
+              <p className="font-medium text-allergen-medium-foreground mb-1">
+                Allergen Introduction Guidelines
+              </p>
+              <p className="text-allergen-medium-foreground/80 leading-relaxed">
+                Introduce allergens between 4-11 months. Start with small amounts and wait 3-5 days between 
+                new allergens. Consult your pediatrician before introducing if there's a family history of food allergies.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Allergen List */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {allergens.map(allergen => (
+          <Card 
+            key={allergen.name} 
+            className={`hover:shadow-medium transition-all duration-200 ${
+              allergen.tried ? 'bg-success/5 border-success/20' : 'bg-gradient-card'
+            }`}
+          >
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <button
+                    onClick={() => toggleTried(allergen.name)}
+                    className="flex items-center gap-2 hover:opacity-70 transition-opacity"
+                  >
+                    {allergen.tried ? (
+                      <CheckCircle2 className="h-5 w-5 text-success" />
+                    ) : (
+                      <Circle className="h-5 w-5 text-muted-foreground" />
+                    )}
+                    {allergen.name}
+                  </button>
+                </CardTitle>
+                
+                {allergen.tried && (
+                  <Badge variant="outline" className="bg-success/10 text-success border-success/20">
+                    Tried
+                  </Badge>
+                )}
+              </div>
+              
+              {allergen.lastTried && (
+                <p className="text-xs text-muted-foreground">
+                  Last tried: {new Date(allergen.lastTried).toLocaleDateString()}
+                </p>
+              )}
+            </CardHeader>
+            
+            <CardContent className="pt-0 space-y-3">
+              {allergen.tried && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      Reaction Notes
+                    </span>
+                    {editingId !== allergen.name && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => startEditing(allergen.name, allergen.reactions)}
+                      >
+                        {allergen.reactions ? 'Edit' : 'Add Notes'}
+                      </Button>
+                    )}
+                  </div>
+                  
+                  {editingId === allergen.name ? (
+                    <div className="space-y-2">
+                      <Textarea
+                        placeholder="Describe any reactions, symptoms, or notes about introduction..."
+                        value={noteText}
+                        onChange={(e) => setNoteText(e.target.value)}
+                        className="min-h-[80px]"
+                      />
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm" 
+                          onClick={() => saveNote(allergen.name)}
+                          className="bg-gradient-primary"
+                        >
+                          Save
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => setEditingId(null)}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-muted/50 p-3 rounded-md min-h-[60px] flex items-center">
+                      <p className="text-sm leading-relaxed">
+                        {allergen.reactions || (
+                          <span className="text-muted-foreground italic">
+                            No reaction notes yet. Click "Add Notes" to record any observations.
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {!allergen.tried && (
+                <div className="text-center py-4">
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Ready to introduce this allergen?
+                  </p>
+                  <Button 
+                    size="sm" 
+                    onClick={() => toggleTried(allergen.name)}
+                    className="bg-gradient-primary"
+                  >
+                    Mark as Tried
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
