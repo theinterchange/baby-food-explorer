@@ -1,12 +1,16 @@
 import { useState } from "react";
+import { Plus } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { FoodLibrary } from "@/components/FoodLibrary";
 import { FoodDiary } from "@/components/FoodDiary";
 import { AllergenDashboard } from "@/components/AllergenDashboard";
+import { AddFoodModal } from "@/components/AddFoodModal";
+import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("library");
+  const [isGlobalModalOpen, setIsGlobalModalOpen] = useState(false);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -39,9 +43,27 @@ const Index = () => {
       <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto">
+      <main className="max-w-4xl mx-auto pb-20">
         {renderContent()}
       </main>
+
+      {/* Global Floating Add Button */}
+      <Button
+        onClick={() => setIsGlobalModalOpen(true)}
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-gradient-primary shadow-lg hover:shadow-xl transition-all duration-200 z-50"
+        size="icon"
+      >
+        <Plus className="h-6 w-6" />
+      </Button>
+
+      <AddFoodModal
+        isOpen={isGlobalModalOpen}
+        onClose={() => setIsGlobalModalOpen(false)}
+        onFoodLogged={(entry) => {
+          // Handle global food logging
+          console.log("Global food logged:", entry);
+        }}
+      />
       
       <Toaster />
     </div>

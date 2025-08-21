@@ -107,13 +107,6 @@ export function FoodDiary() {
         </CardContent>
       </Card>
 
-      {/* Quick Add Button */}
-      <div className="flex justify-center">
-        <Button className="flex items-center gap-2 bg-gradient-primary">
-          <Plus className="h-4 w-4" />
-          Log New Food
-        </Button>
-      </div>
 
       {/* Diary Entries */}
       <div className="space-y-4">
@@ -160,10 +153,6 @@ export function FoodDiary() {
                 <p className="text-sm text-muted-foreground mb-4">
                   Start tracking your baby's foods by logging their first meal
                 </p>
-                <Button className="bg-gradient-primary">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add First Entry
-                </Button>
               </div>
             </CardContent>
           </Card>

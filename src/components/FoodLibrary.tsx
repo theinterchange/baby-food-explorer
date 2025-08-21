@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
+import { AddFoodModal } from "./AddFoodModal";
 
 // Sample food data - would come from a database in production
 const FOODS = [
@@ -136,6 +137,8 @@ export function FoodLibrary() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [showAllergensOnly, setShowAllergensOnly] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFood, setSelectedFood] = useState<string | undefined>();
   const { toast } = useToast();
 
   const foodTypes = [...new Set(FOODS.map(food => food.type))];
@@ -155,10 +158,13 @@ export function FoodLibrary() {
   };
 
   const handleQuickAdd = (food: Food) => {
-    toast({
-      title: "Food Added to Diary",
-      description: `${food.name} has been logged for today.`,
-    });
+    setSelectedFood(food.name);
+    setIsModalOpen(true);
+  };
+
+  const handleFoodLogged = (entry: any) => {
+    // Here you would typically update your food diary state/database
+    console.log("Food logged:", entry);
   };
 
   return (
@@ -321,6 +327,16 @@ export function FoodLibrary() {
           </div>
         )}
       </div>
+      
+      <AddFoodModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedFood(undefined);
+        }}
+        selectedFood={selectedFood}
+        onFoodLogged={handleFoodLogged}
+      />
     </TooltipProvider>
   );
 }
