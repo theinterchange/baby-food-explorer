@@ -3,6 +3,7 @@ import { Navigation } from "@/components/Navigation";
 import { FoodLibrary } from "@/components/FoodLibrary";
 import { FoodDiary } from "@/components/FoodDiary";
 import { AllergenDashboard } from "@/components/AllergenDashboard";
+import { Toaster } from "@/components/ui/toaster";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("library");
@@ -41,6 +42,8 @@ const Index = () => {
       <main className="max-w-4xl mx-auto">
         {renderContent()}
       </main>
+      
+      <Toaster />
     </div>
   );
 };
