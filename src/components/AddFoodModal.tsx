@@ -11,6 +11,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { FOODS } from "@/data/foods";
 
 const PREPARATION_METHODS = [
   "Purée",
@@ -25,30 +26,6 @@ const PREPARATION_METHODS = [
   "Grated",
   "Sliced/Strips",
   "Cubed"
-];
-
-// Food library data for autocomplete
-const FOODS = [
-  { name: "Avocado", allergens: [] },
-  { name: "Pumpkin", allergens: [] },
-  { name: "Mango", allergens: [] },
-  { name: "Cucumber", allergens: [] },
-  { name: "Broccoli", allergens: [] },
-  { name: "Carrot", allergens: [] },
-  { name: "Tomato", allergens: [] },
-  { name: "Eggs", allergens: ["eggs"] },
-  { name: "Peanut Butter", allergens: ["peanuts"] },
-  { name: "Salmon", allergens: ["fish"] },
-  { name: "Whole Milk", allergens: ["milk"] },
-  { name: "Sweet Potato", allergens: [] },
-  { name: "Banana", allergens: [] },
-  { name: "Apple", allergens: [] },
-  { name: "Pear", allergens: [] },
-  { name: "Rice Cereal", allergens: [] },
-  { name: "Oatmeal", allergens: ["wheat"] },
-  { name: "Yogurt", allergens: ["milk"] },
-  { name: "Chicken", allergens: [] },
-  { name: "Beef", allergens: [] }
 ];
 
 const BABY_REACTIONS = [

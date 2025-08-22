@@ -7,131 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { AddFoodModal } from "./AddFoodModal";
-
-// Sample food data - would come from a database in production
-const FOODS = [
-  {
-    id: 1,
-    name: "Avocado",
-    type: "Fruit",
-    allergens: [],
-    chokingHazard: "unlikely",
-    dogSafe: true,
-    description: "Rich in healthy fats, perfect for first foods",
-    icon: "🥑" // Placeholder - replace with your cute avocado icon
-  },
-  {
-    id: 2,
-    name: "Pumpkin",
-    type: "Vegetable",
-    allergens: [],
-    chokingHazard: "unlikely",
-    dogSafe: true,
-    description: "Sweet, nutritious, and perfect for baby's first foods",
-    icon: "🎃" // Replace with your cute pumpkin icon
-  },
-  {
-    id: 3,
-    name: "Mango",
-    type: "Fruit",
-    allergens: [],
-    chokingHazard: "unlikely",
-    dogSafe: true,
-    description: "Sweet tropical fruit rich in vitamins A and C",
-    icon: "🥭" // Replace with your cute mango icon
-  },
-  {
-    id: 4,
-    name: "Cucumber",
-    type: "Vegetable",
-    allergens: [],
-    chokingHazard: "unlikely",
-    dogSafe: true,
-    description: "Mild, refreshing, and great for teething",
-    icon: "🥒" // Replace with your cute cucumber icon
-  },
-  {
-    id: 5,
-    name: "Broccoli",
-    type: "Vegetable",
-    allergens: [],
-    chokingHazard: "unlikely",
-    dogSafe: true,
-    description: "Nutrient-dense green vegetable, steam until soft",
-    icon: "🥦" // Replace with your cute broccoli icon
-  },
-  {
-    id: 6,
-    name: "Carrot",
-    type: "Vegetable",
-    allergens: [],
-    chokingHazard: "unlikely",
-    dogSafe: true,
-    description: "Sweet, colorful, packed with beta-carotene",
-    icon: "🥕" // Replace with your cute carrot icon
-  },
-  {
-    id: 7,
-    name: "Tomato",
-    type: "Fruit",
-    allergens: [],
-    chokingHazard: "unlikely",
-    dogSafe: true,
-    description: "Rich in lycopene, remove skin for babies",
-    icon: "🍅" // Replace with your cute tomato icon
-  },
-  {
-    id: 8,
-    name: "Eggs",
-    type: "Protein",
-    allergens: ["eggs"],
-    chokingHazard: "unlikely",
-    dogSafe: true,
-    description: "Great source of protein and choline",
-    icon: "🥚" // Placeholder - add your cute egg icon
-  },
-  {
-    id: 9,
-    name: "Peanut Butter",
-    type: "Protein",
-    allergens: ["peanuts"],
-    chokingHazard: "yes",
-    dogSafe: false,
-    description: "Introduce early to reduce allergy risk - thin with water",
-    icon: "🥜" // Placeholder - add your cute peanut icon
-  },
-  {
-    id: 10,
-    name: "Salmon",
-    type: "Protein",
-    allergens: ["fish"],
-    chokingHazard: "unlikely",
-    dogSafe: true,
-    description: "Rich in omega-3 fatty acids, remove all bones",
-    icon: "🐟" // Placeholder - add your cute fish icon
-  },
-  {
-    id: 11,
-    name: "Whole Milk",
-    type: "Dairy",
-    allergens: ["milk"],
-    chokingHazard: "unlikely",
-    dogSafe: false,
-    description: "Introduce after 12 months",
-    icon: "🥛" // Placeholder - add your cute milk icon
-  }
-];
-
-interface Food {
-  id: number;
-  name: string;
-  type: string;
-  allergens: string[];
-  chokingHazard: string;
-  dogSafe: boolean;
-  description: string;
-  icon: string;
-}
+import { FOODS, Food, getFoodTypes } from "@/data/foods";
 
 interface FoodLibraryProps {
   onFoodLogged?: (entry: any) => void;
@@ -145,7 +21,7 @@ export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
   const [selectedFood, setSelectedFood] = useState<string | undefined>();
   const { toast } = useToast();
 
-  const foodTypes = [...new Set(FOODS.map(food => food.type))];
+  const foodTypes = getFoodTypes();
 
   const filteredFoods = FOODS.filter(food => {
     const matchesSearch = food.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -157,7 +33,7 @@ export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
   });
 
   const getAllergenBadgeColor = (allergen: string) => {
-    const commonAllergens = ["eggs", "milk", "peanuts", "tree nuts", "fish", "shellfish", "soy", "wheat"];
+    const commonAllergens = ["Egg", "Dairy", "Peanut", "Tree Nut", "Fish", "Shellfish", "Soy", "Wheat"];
     return commonAllergens.includes(allergen) ? "allergen-high" : "allergen-medium";
   };
 
@@ -248,7 +124,7 @@ export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
                         <TooltipContent className="max-w-xs">
                           <p className="text-sm">{food.description}</p>
                           <div className="mt-2 text-xs">
-                            <p>Choking Risk: {food.chokingHazard === "yes" ? "Yes" : "Unlikely"}</p>
+                            <p>Choking Risk: {food.chokingHazard ? "Yes" : "Unlikely"}</p>
                           </div>
                         </TooltipContent>
                       </Tooltip>
@@ -274,7 +150,7 @@ export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
                         </Badge>
                       )}
                       
-                      {food.chokingHazard === "yes" && (
+                      {food.chokingHazard && (
                         <Badge variant="outline" className="bg-choking-risk text-choking-risk-foreground text-xs">
                           <AlertTriangle className="h-3 w-3 mr-1" />
                           Choking Risk
