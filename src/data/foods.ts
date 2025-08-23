@@ -485,8 +485,6 @@ export const FOODS: Food[] = [
   { id: 314, name: "Soft Pretzel", type: "Grain", allergens: ["Wheat"], chokingHazard: false, dogSafe: false, description: "Remove salt, tear into pieces", icon: getIconForFood("Soft Pretzel", "Grain") },
   { id: 315, name: "Graham Cracker", type: "Prepared", allergens: ["Wheat"], chokingHazard: false, dogSafe: false, description: "Break into appropriate sizes", icon: getIconForFood("Graham Cracker", "Prepared") },
 
-  // BEVERAGES (appropriate for babies)
-  { id: 316, name: "Water", type: "Beverage", allergens: [], chokingHazard: false, dogSafe: true, description: "Primary drink after 6 months", icon: "💧" },
   { id: 317, name: "Breast Milk", type: "Dairy", allergens: [], chokingHazard: false, dogSafe: false, description: "Primary nutrition for babies", icon: "🍼" },
   { id: 318, name: "Formula", type: "Prepared", allergens: ["Dairy"], chokingHazard: false, dogSafe: false, description: "Follow preparation instructions", icon: "🍼" },
 
@@ -523,8 +521,6 @@ export const FOODS: Food[] = [
   { id: 334, name: "Labneh", type: "Dairy", allergens: ["Dairy"], chokingHazard: false, dogSafe: true, description: "Strained yogurt cheese", icon: getIconForFood("Labneh", "Dairy") },
 
   // TRADITIONAL REMEDIES
-  { id: 335, name: "Chamomile Tea", type: "Beverage", allergens: [], chokingHazard: false, dogSafe: true, description: "Weak tea only, consult pediatrician", icon: "🫖" },
-  { id: 336, name: "Fennel Tea", type: "Beverage", allergens: [], chokingHazard: false, dogSafe: true, description: "May help with digestion", icon: "🫖" },
 
   // UNUSUAL FRUITS
   { id: 337, name: "Horned Melon", type: "Fruit", allergens: [], chokingHazard: true, dogSafe: true, description: "Seeds may be choking hazard", icon: getIconForFood("Horned Melon", "Fruit") },

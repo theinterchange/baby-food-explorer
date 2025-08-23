@@ -76,15 +76,18 @@ export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="text-sm font-medium mb-1 block">Food Type</label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Filter className="h-4 w-4 text-primary" />
+                Food Type
+              </label>
               <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger>
+                <SelectTrigger className="h-11 bg-card border-border/50 hover:bg-accent/50 transition-colors">
                   <SelectValue placeholder="All Types" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
+                <SelectContent className="bg-popover border-border shadow-lg">
+                  <SelectItem value="all" className="font-medium">All Types</SelectItem>
                   {foodTypes.map(type => (
                     <SelectItem key={type} value={type}>{type}</SelectItem>
                   ))}
@@ -92,14 +95,17 @@ export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
               </Select>
             </div>
 
-            <div>
-              <label className="text-sm font-medium mb-1 block">Allergens</label>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Shield className="h-4 w-4 text-destructive" />
+                Allergens
+              </label>
               <Select value={selectedAllergen} onValueChange={setSelectedAllergen}>
-                <SelectTrigger>
+                <SelectTrigger className="h-11 bg-card border-border/50 hover:bg-accent/50 transition-colors">
                   <SelectValue placeholder="All Allergens" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Allergens</SelectItem>
+                <SelectContent className="bg-popover border-border shadow-lg">
+                  <SelectItem value="all" className="font-medium">All Allergens</SelectItem>
                   {allergens.map(allergen => (
                     <SelectItem key={allergen} value={allergen}>{allergen}</SelectItem>
                   ))}
@@ -107,16 +113,29 @@ export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
               </Select>
             </div>
 
-            <div>
-              <label className="text-sm font-medium mb-1 block">Dog Safe</label>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Heart className="h-4 w-4 text-green-600" />
+                Dog Safe
+              </label>
               <Select value={selectedDogSafe} onValueChange={setSelectedDogSafe}>
-                <SelectTrigger>
+                <SelectTrigger className="h-11 bg-card border-border/50 hover:bg-accent/50 transition-colors">
                   <SelectValue placeholder="All" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="yes">Dog Safe</SelectItem>
-                  <SelectItem value="no">Not Dog Safe</SelectItem>
+                <SelectContent className="bg-popover border-border shadow-lg">
+                  <SelectItem value="all" className="font-medium">All</SelectItem>
+                  <SelectItem value="yes" className="text-green-600">
+                    <div className="flex items-center gap-2">
+                      <Heart className="h-3 w-3" />
+                      Dog Safe
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="no" className="text-orange-600">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="h-3 w-3" />
+                      Not Dog Safe
+                    </div>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
