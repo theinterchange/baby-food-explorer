@@ -140,6 +140,23 @@ export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
               </Select>
             </div>
           </div>
+
+          <div className="flex justify-center">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => {
+                setSearchTerm("");
+                setSelectedType("all");
+                setSelectedAllergen("all");
+                setSelectedDogSafe("all");
+              }}
+              className="flex items-center gap-2"
+            >
+              <Filter className="h-4 w-4" />
+              Clear Filters
+            </Button>
+          </div>
         </div>
 
         {/* Mobile-Optimized Food Cards */}
