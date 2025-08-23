@@ -117,7 +117,7 @@ export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
 
             <div className="space-y-2">
               <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                🐕
+                🐶
                 Dog Safe
               </label>
               <Select value={selectedDogSafe} onValueChange={setSelectedDogSafe}>
@@ -128,7 +128,7 @@ export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
                   <SelectItem value="all" className="font-medium">All</SelectItem>
                   <SelectItem value="yes" className="text-green-600">
                     <div className="flex items-center gap-2">
-                      🐕
+                      🐶
                       Dog Safe
                     </div>
                   </SelectItem>
@@ -206,7 +206,7 @@ export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
                       
                       {food.dogSafe && (
                         <Badge variant="outline" className="bg-dog-safe text-dog-safe-foreground text-xs">
-                          🐕
+                          🐶
                         </Badge>
                       )}
                       
