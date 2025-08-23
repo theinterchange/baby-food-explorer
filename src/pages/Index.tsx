@@ -37,6 +37,22 @@ const INITIAL_ALLERGENS = [
   { name: "wheat", tried: false, reactions: "", lastTried: null }
 ];
 
+// Map food allergen names to dashboard allergen names
+const mapAllergenName = (foodAllergen: string): string => {
+  const mapping: { [key: string]: string } = {
+    'Egg': 'eggs',
+    'Dairy': 'milk',
+    'Peanut': 'peanuts',
+    'Tree Nut': 'tree nuts',
+    'Tree Nuts': 'tree nuts',
+    'Fish': 'fish',
+    'Shellfish': 'shellfish',
+    'Soy': 'soy',
+    'Wheat': 'wheat'
+  };
+  return mapping[foodAllergen] || foodAllergen.toLowerCase();
+};
+
 const Index = () => {
   const [activeTab, setActiveTab] = useState("library");
   const [isGlobalModalOpen, setIsGlobalModalOpen] = useState(false);
@@ -54,7 +70,8 @@ const Index = () => {
     if (entry.isAllergen && entry.allergens.length > 0) {
       setAllergenData(prev => 
         prev.map(allergen => {
-          if (entry.allergens.includes(allergen.name)) {
+          const mappedAllergens = entry.allergens.map(mapAllergenName);
+          if (mappedAllergens.includes(allergen.name)) {
             const historyEntry = {
               date: entry.date,
               hadReaction: entry.hadReaction,
@@ -86,7 +103,8 @@ const Index = () => {
     if (updatedEntry.isAllergen && updatedEntry.allergens.length > 0) {
       setAllergenData(prev => 
         prev.map(allergen => {
-          if (updatedEntry.allergens.includes(allergen.name)) {
+          const mappedAllergens = updatedEntry.allergens.map(mapAllergenName);
+          if (mappedAllergens.includes(allergen.name)) {
             // Update or add history entry for this date
             const historyWithoutThisDate = allergen.history.filter(h => h.date !== updatedEntry.date);
             const newHistoryEntry = {
@@ -115,7 +133,8 @@ const Index = () => {
     if (entryToDelete?.isAllergen && entryToDelete.allergens.length > 0) {
       setAllergenData(prev => 
         prev.map(allergen => {
-          if (entryToDelete.allergens.includes(allergen.name)) {
+          const mappedAllergens = entryToDelete.allergens.map(mapAllergenName);
+          if (mappedAllergens.includes(allergen.name)) {
             const updatedHistory = allergen.history.filter(h => h.date !== entryToDelete.date);
             return {
               ...allergen,
