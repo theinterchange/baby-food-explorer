@@ -25,7 +25,7 @@ export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
 
   const foodTypes = getFoodTypes().filter(type => type && type.trim() !== "");
   const allergens = Array.from(new Set(FOODS.flatMap(food => food.allergens)))
-    .filter(allergen => allergen && allergen.trim() !== "")
+    .filter(allergen => allergen && allergen.trim() !== "" && allergen !== null && allergen !== undefined)
     .sort();
 
   const filteredFoods = FOODS.filter(food => {
