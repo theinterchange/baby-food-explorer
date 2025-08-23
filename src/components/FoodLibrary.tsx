@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { AddFoodModal } from "./AddFoodModal";
 import { FOODS, Food, getFoodTypes } from "@/data/foods";
@@ -15,21 +16,27 @@ interface FoodLibraryProps {
 
 export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedType, setSelectedType] = useState<string | null>(null);
-  const [showAllergensOnly, setShowAllergensOnly] = useState(false);
+  const [selectedType, setSelectedType] = useState<string>("all");
+  const [selectedAllergen, setSelectedAllergen] = useState<string>("all");
+  const [selectedDogSafe, setSelectedDogSafe] = useState<string>("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFood, setSelectedFood] = useState<string | undefined>();
   const { toast } = useToast();
 
   const foodTypes = getFoodTypes();
+  const allergens = Array.from(new Set(FOODS.flatMap(food => food.allergens))).sort();
 
   const filteredFoods = FOODS.filter(food => {
     const matchesSearch = food.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          food.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = !selectedType || food.type === selectedType;
-    const matchesAllergenFilter = !showAllergensOnly || food.allergens.length > 0;
+    const matchesType = selectedType === "all" || food.type === selectedType;
+    const matchesAllergen = selectedAllergen === "all" || 
+                           food.allergens.some(allergen => allergen === selectedAllergen);
+    const matchesDogSafe = selectedDogSafe === "all" || 
+                          (selectedDogSafe === "yes" && food.dogSafe) ||
+                          (selectedDogSafe === "no" && !food.dogSafe);
     
-    return matchesSearch && matchesType && matchesAllergenFilter;
+    return matchesSearch && matchesType && matchesAllergen && matchesDogSafe;
   });
 
   const getAllergenBadgeColor = (allergen: string) => {
@@ -69,35 +76,51 @@ export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
             />
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant={selectedType === null ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedType(null)}
-            >
-              All
-            </Button>
-            {foodTypes.map(type => (
-              <Button
-                key={type}
-                variant={selectedType === type ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedType(type)}
-              >
-                {type}
-              </Button>
-            ))}
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="text-sm font-medium mb-1 block">Food Type</label>
+              <Select value={selectedType} onValueChange={setSelectedType}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Types" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  {foodTypes.map(type => (
+                    <SelectItem key={type} value={type}>{type}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <Button
-            variant={showAllergensOnly ? "default" : "outline"}
-            size="sm"
-            onClick={() => setShowAllergensOnly(!showAllergensOnly)}
-            className="flex items-center gap-2"
-          >
-            <Filter className="h-4 w-4" />
-            Allergens Only
-          </Button>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Allergens</label>
+              <Select value={selectedAllergen} onValueChange={setSelectedAllergen}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Allergens" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Allergens</SelectItem>
+                  {allergens.map(allergen => (
+                    <SelectItem key={allergen} value={allergen}>{allergen}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-1 block">Dog Safe</label>
+              <Select value={selectedDogSafe} onValueChange={setSelectedDogSafe}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="yes">Dog Safe</SelectItem>
+                  <SelectItem value="no">Not Dog Safe</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
 
         {/* Mobile-Optimized Food Cards */}
@@ -181,8 +204,9 @@ export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
               size="sm"
               onClick={() => {
                 setSearchTerm("");
-                setSelectedType(null);
-                setShowAllergensOnly(false);
+                setSelectedType("all");
+                setSelectedAllergen("all");
+                setSelectedDogSafe("all");
               }}
               className="mt-2"
             >
