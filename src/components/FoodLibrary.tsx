@@ -23,8 +23,10 @@ export function FoodLibrary({ onFoodLogged }: FoodLibraryProps) {
   const [selectedFood, setSelectedFood] = useState<string | undefined>();
   const { toast } = useToast();
 
-  const foodTypes = getFoodTypes();
-  const allergens = Array.from(new Set(FOODS.flatMap(food => food.allergens))).sort();
+  const foodTypes = getFoodTypes().filter(type => type && type.trim() !== "");
+  const allergens = Array.from(new Set(FOODS.flatMap(food => food.allergens)))
+    .filter(allergen => allergen && allergen.trim() !== "")
+    .sort();
 
   const filteredFoods = FOODS.filter(food => {
     const matchesSearch = food.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
