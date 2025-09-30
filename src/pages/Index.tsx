@@ -1,29 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useDataService } from "@/hooks/useDataService";
 import { Navigation } from "@/components/Navigation";
 import { FoodLibrary } from "@/components/FoodLibrary";
 import { FoodDiary } from "@/components/FoodDiary";
 import { AllergenDashboard } from "@/components/AllergenDashboard";
 import { AddFoodModal } from "@/components/AddFoodModal";
+import { AuthModal } from "@/components/AuthModal";
+import { SaveProgressModal } from "@/components/SaveProgressModal";
+import { UserStatus } from "@/components/UserStatus";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
-
-// Initial diary entries
-const INITIAL_DIARY_ENTRIES = [
-  {
-    id: 1,
-    date: "2024-01-20",
-    time: "09:30",
-    foodName: "Avocado",
-    preparation: "Mashed",
-    babyReaction: "liked",
-    hadReaction: false,
-    notes: "First time trying! Loved it and asked for more.",
-    timestamp: "2024-01-20T09:30:00.000Z",
-    isAllergen: false,
-    allergens: []
-  }
-];
 
 // Initial allergen data
 const INITIAL_ALLERGENS = [
@@ -54,17 +42,38 @@ const mapAllergenName = (foodAllergen: string): string => {
 };
 
 const Index = () => {
+  const { user } = useAuth();
+  const { entries, addEntry, updateEntry, deleteEntry, migrateGuestData, entryCount } = useDataService();
   const [activeTab, setActiveTab] = useState("library");
   const [isGlobalModalOpen, setIsGlobalModalOpen] = useState(false);
-  const [diaryEntries, setDiaryEntries] = useState(INITIAL_DIARY_ENTRIES);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isSaveProgressModalOpen, setIsSaveProgressModalOpen] = useState(false);
+  const [hasShownSavePrompt, setHasShownSavePrompt] = useState(() => {
+    return localStorage.getItem('has-shown-save-prompt') === 'true';
+  });
   const [allergenData, setAllergenData] = useState(INITIAL_ALLERGENS.map(allergen => ({
     ...allergen,
     history: [] as { date: string; hadReaction: boolean; notes: string }[]
   })));
 
-  const handleFoodLogged = (entry: any) => {
-    // Add to diary
-    setDiaryEntries(prev => [entry, ...prev]);
+  // Show save progress modal after 3 entries for guest users
+  useEffect(() => {
+    if (!user && entryCount >= 3 && !hasShownSavePrompt) {
+      setIsSaveProgressModalOpen(true);
+      setHasShownSavePrompt(true);
+      localStorage.setItem('has-shown-save-prompt', 'true');
+    }
+  }, [entryCount, user, hasShownSavePrompt]);
+
+  // Migrate guest data when user signs in
+  useEffect(() => {
+    if (user && entryCount > 0) {
+      migrateGuestData();
+    }
+  }, [user]);
+
+  const handleFoodLogged = async (entry: any) => {
+    await addEntry(entry);
     
     // Update allergen data if the food is an allergen
     if (entry.isAllergen && entry.allergens.length > 0) {
@@ -94,10 +103,8 @@ const Index = () => {
     }
   };
 
-  const handleEntryUpdated = (updatedEntry: any) => {
-    setDiaryEntries(prev => 
-      prev.map(entry => entry.id === updatedEntry.id ? updatedEntry : entry)
-    );
+  const handleEntryUpdated = async (updatedEntry: any) => {
+    await updateEntry(updatedEntry);
     
     // Update allergen data if this entry affects allergens
     if (updatedEntry.isAllergen && updatedEntry.allergens.length > 0) {
@@ -105,7 +112,6 @@ const Index = () => {
         prev.map(allergen => {
           const mappedAllergens = updatedEntry.allergens.map(mapAllergenName);
           if (mappedAllergens.includes(allergen.name)) {
-            // Update or add history entry for this date
             const historyWithoutThisDate = allergen.history.filter(h => h.date !== updatedEntry.date);
             const newHistoryEntry = {
               date: updatedEntry.date,
@@ -125,9 +131,9 @@ const Index = () => {
     }
   };
 
-  const handleEntryDeleted = (entryId: number) => {
-    const entryToDelete = diaryEntries.find(entry => entry.id === entryId);
-    setDiaryEntries(prev => prev.filter(entry => entry.id !== entryId));
+  const handleEntryDeleted = async (entryId: number) => {
+    const entryToDelete = entries.find(entry => entry.id === entryId);
+    await deleteEntry(entryId);
     
     // Remove from allergen history if it was an allergen entry
     if (entryToDelete?.isAllergen && entryToDelete.allergens.length > 0) {
@@ -149,6 +155,11 @@ const Index = () => {
     }
   };
 
+  const handleOpenAuth = () => {
+    setIsSaveProgressModalOpen(false);
+    setIsAuthModalOpen(true);
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case "library":
@@ -156,7 +167,7 @@ const Index = () => {
       case "diary":
         return (
           <FoodDiary 
-            entries={diaryEntries} 
+            entries={entries} 
             onEntryUpdated={handleEntryUpdated}
             onEntryDeleted={handleEntryDeleted}
           />
@@ -172,13 +183,18 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-soft">
       {/* Header */}
       <header className="bg-card shadow-soft">
-        <div className="px-6 py-4 text-center">
-          <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            Baby Food Tracker
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Safe, healthy food introduction for your little one
-          </p>
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between max-w-4xl mx-auto">
+            <div className="text-center flex-1">
+              <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                Baby Food Tracker
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Safe, healthy food introduction for your little one
+              </p>
+            </div>
+            <UserStatus onOpenAuth={handleOpenAuth} />
+          </div>
         </div>
       </header>
 
@@ -203,6 +219,18 @@ const Index = () => {
         isOpen={isGlobalModalOpen}
         onClose={() => setIsGlobalModalOpen(false)}
         onFoodLogged={handleFoodLogged}
+      />
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
+
+      <SaveProgressModal
+        isOpen={isSaveProgressModalOpen}
+        onClose={() => setIsSaveProgressModalOpen(false)}
+        onSignUp={handleOpenAuth}
+        entryCount={entryCount}
       />
       
       <Toaster />
