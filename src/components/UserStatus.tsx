@@ -44,7 +44,7 @@ export function UserStatus({ onOpenAuth }: UserStatusProps) {
             className="text-sm text-muted-foreground hover:text-foreground"
           >
             <User className="h-4 w-4 mr-2" />
-            Guest User (entries not saved)
+            Guest User
           </Button>
         </TooltipTrigger>
         <TooltipContent>

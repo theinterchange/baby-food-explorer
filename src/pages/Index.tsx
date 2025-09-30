@@ -184,8 +184,8 @@ const Index = () => {
       {/* Header */}
       <header className="bg-card shadow-soft">
         <div className="px-6 py-4">
-          <div className="flex items-center justify-between max-w-4xl mx-auto">
-            <div className="text-center flex-1">
+          <div className="relative max-w-4xl mx-auto">
+            <div className="text-center">
               <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
                 Baby Food Tracker
               </h1>
@@ -193,7 +193,9 @@ const Index = () => {
                 Safe, healthy food introduction for your little one
               </p>
             </div>
-            <UserStatus onOpenAuth={handleOpenAuth} />
+            <div className="absolute right-0 top-1/2 -translate-y-1/2">
+              <UserStatus onOpenAuth={handleOpenAuth} />
+            </div>
           </div>
         </div>
       </header>
